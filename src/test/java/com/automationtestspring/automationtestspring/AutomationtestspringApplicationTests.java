@@ -26,7 +26,7 @@ class AutomationtestspringApplicationTests {
     @Test
     void loginScreenTest() throws InterruptedException {
         driver.get("https://the-internet.herokuapp.com/login");
-        WebElement username = driver.findElement(By.name("id"));
+        WebElement username = driver.findElement(By.name("username"));
         WebElement password = driver.findElement(By.name("password"));
         WebElement loginBtn = driver.findElement(By.className("radius"));
         username.sendKeys("tomsmith");
