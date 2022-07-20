@@ -3,10 +3,7 @@ package common.fields;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import java.text.DateFormatSymbols;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class InvoiceCalendar {
@@ -52,14 +49,14 @@ public class InvoiceCalendar {
         }
     }
 
-    private void selectTableMonth(String selectedMonth) throws ParseException {
+    private void selectTableMonth(String selectedMonth) {
         int sMonth = Integer.parseInt(selectedMonth);
         WebElement monthsBody = driver.findElement(By.className("owl-dt-calendar-body"));
         List<WebElement> monthsRows = monthsBody.findElements(By.tagName("tr"));
         for (WebElement row : monthsRows) {
             List<WebElement> months = row.findElements(By.tagName("td"));
             for (WebElement month : months) {
-                String tdContent =  Integer.toString(getCorrespondingMonth(month.getText()));
+                String tdContent = getCorrespondingMonth(month.getText());
                 int mValue = Integer.parseInt(tdContent);
                 if (mValue == sMonth) {
                     month.click();
@@ -134,24 +131,46 @@ public class InvoiceCalendar {
     }
 
 
-    private List<String> getCurrentMonthYear() throws ParseException {
+    private List<String> getCurrentMonthYear() {
         monthYearElement = driver.findElement(By.xpath("//button[@aria-label='Choose month and year']"));
         List<String> monthYear = Arrays.asList(monthYearElement.getText().split(" "));
-        int month = getCorrespondingMonth(monthYear.get(0));
-        monthYear.set(0, Integer.toString(month));
+        String month = getCorrespondingMonth(monthYear.get(0));
+        monthYear.set(0, month);
         return monthYear;
     }
 
-    private int getCorrespondingMonth(String month) throws ParseException {
-        Date date = new SimpleDateFormat("MMM", Locale.ENGLISH).parse(month);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.MONTH);
+    private String getCorrespondingMonth(String month) {
+        if ("january".contains(month.toLowerCase())) {
+            return "01";
+        } else if ("february".contains(month.toLowerCase())) {
+            return "02";
+        } else if ("march".contains(month.toLowerCase())) {
+            return "03";
+        } else if ("april".contains(month.toLowerCase())) {
+            return "04";
+        } else if ("may".contains(month.toLowerCase())) {
+            return "05";
+        } else if ("june".contains(month.toLowerCase())) {
+            return "06";
+        } else if ("july".contains(month.toLowerCase())) {
+            return "07";
+        } else if ("august".contains(month.toLowerCase())) {
+            return "08";
+        } else if ("september".contains(month.toLowerCase())) {
+            return "09";
+        } else if ("october".contains(month.toLowerCase())) {
+            return "10";
+        } else if ("november".contains(month.toLowerCase())) {
+            return "11";
+        } else if ("december".contains(month.toLowerCase())) {
+            return "12";
+        }
+        return "";
     }
 
 
     // selected date with pattern dd-MM-YYYY
-    public void selectDate(String selectedDate) throws ParseException {
+    public void selectDate(String selectedDate) {
         List<String> date = Arrays.asList(selectedDate.split("-"));
         List<String> monthYear = getCurrentMonthYear();
         int cYear = Integer.parseInt(monthYear.get(1));
