@@ -10,21 +10,96 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AutomationtestspringApplicationTests {
     private WebDriver driver;
+    private String lang;
 
     @BeforeAll
-    void beforeAll() {
+    void beforeAll() throws InterruptedException {
         System.setProperty("webdriver.gecko.driver", "D:/Devops/demo/automationtestspring/geckodriver.exe");
         driver = new FirefoxDriver();
+        lang = "English";
+        driver.get("*******");
+        invoiceLogin();
     }
 
+//    @Test
+    void switchLang() {
+        WebElement languageElement = driver.findElement(By.className("dropdown-toggle"));
+        languageElement.click();
+        WebElement item = driver.findElement(By.className("dropdown-item"));
+        item.click();
+    }
+
+    void invoiceLogin() throws InterruptedException {
+        List<WebElement> elements = driver.findElements(By.className("nav-link"));
+//        WebElement languageElement = driver.findElement(By.className("dropdown-toggle"));
+//        lang = languageElement.getText();
+        for (WebElement element : elements) {
+//            if (lang.equals("English")) {
+//                String content = element.getText();
+//                if(content.contains("current")) {
+//                    content = content.split("\n")[0];
+//                }
+//                Assert.isTrue(content.equals(content.toUpperCase()), content + " Not in UpperCase");
+//            }
+            if(element.getText().equals("Login")) {
+                element.click();
+                Thread.sleep(3000L);
+                WebElement email = driver.findElement(By.id("email"));
+                WebElement password = driver.findElement(By.id("password"));
+                WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
+                email.sendKeys("*****");
+                password.sendKeys("*****");
+                loginBtn.submit();
+                break;
+            }
+        }
+    }
+
+
     @Test
-    void loginScreenTest() throws InterruptedException {
+    void createInvoice() throws InterruptedException {
+        Thread.sleep(20000L);
+        WebElement element = driver.findElement(By.id("side-menu"));
+        List<WebElement> items = element.findElements(By.tagName("li"));
+        for(WebElement item : items) {
+            WebElement upperItem = item.findElement(By.tagName("a"));
+            if(upperItem.getText().toLowerCase().equals("invoices")) {
+                upperItem.click();
+                List<WebElement> internalElements = item.findElements(By.tagName("li"));
+                for (WebElement internalElement : internalElements) {
+                    WebElement taxInvoice = internalElement.findElement(By.tagName("a"));
+                    if(taxInvoice != null) {
+                        if (taxInvoice.getText().toLowerCase().equals("tax invoices")) {
+                            taxInvoice.click();
+                            goToAddInvoice();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void goToAddInvoice() throws InterruptedException {
+        Thread.sleep(5000L);
+        List<WebElement> buttons = driver.findElements(By.ByTagName.tagName("button"));
+        for(WebElement button : buttons) {
+            if(button.getText().contains("Add Tax Invoice")) {
+                button.click();
+            }
+        }
+    }
+
+//    @Test
+//    @Order(1)
+    void loginScreenHerokuappTest() throws InterruptedException {
         driver.get("https://the-internet.herokuapp.com/login");
         WebElement username = driver.findElement(By.name("username"));
         WebElement password = driver.findElement(By.name("password"));
@@ -33,10 +108,12 @@ class AutomationtestspringApplicationTests {
         password.sendKeys("SuperSecretPassword!");
         loginBtn.submit();
         Thread.sleep(3000L);
-        logout();
+        logoutHerokuapp();
     }
 
-    void logout() {
+//    @Test
+//    @Order(2)
+    private void logoutHerokuapp() throws InterruptedException {
         WebElement logoutBtn = driver.findElement(By.linkText("Logout"));
         Assert.isTrue(logoutBtn.getText().equals("Logout"), "Assertion is Not True");
         logoutBtn.click();
