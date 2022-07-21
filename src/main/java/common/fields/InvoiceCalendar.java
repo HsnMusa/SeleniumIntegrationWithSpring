@@ -185,17 +185,13 @@ public class InvoiceCalendar {
 
     private void selectDay(String selectedDay) {
         WebElement daysBody = driver.findElement(By.className("owl-dt-calendar-body"));
-        List<WebElement> daysRows = daysBody.findElements(By.tagName("tr"));
-        for (WebElement row : daysRows) {
-            List<WebElement> days = row.findElements(By.tagName("td"));
-            for (WebElement day : days) {
-                WebElement tdSpan = day.findElement(By.tagName("span"));
-                int dValue = Integer.parseInt(day.getText());
-                int sDay = Integer.parseInt(selectedDay);
-                if (!tdSpan.getAttribute("class").contains("owl-dt-calendar-cell-out") && dValue == sDay) {
-                    day.click();
-                    return;
-                }
+        List<WebElement> days = daysBody.findElements(By.className("owl-dt-calendar-cell-content"));
+        for (WebElement day : days) {
+            int dValue = Integer.parseInt(day.getText());
+            int sDay = Integer.parseInt(selectedDay);
+            if (!day.getAttribute("class").contains("owl-dt-calendar-cell-out") && dValue == sDay) {
+                day.click();
+                return;
             }
         }
     }

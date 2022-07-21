@@ -1,4 +1,5 @@
 package com.automationtestspring.automationtestspring;
+import common.fields.InvoiceCalendar;
 import dev.failsafe.internal.util.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.text.ParseException;
 import java.util.List;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,7 +27,7 @@ class AutomationtestspringApplicationTests {
         System.setProperty("webdriver.gecko.driver", "D:/Devops/demo/automationtestspring/geckodriver.exe");
         driver = new FirefoxDriver();
         lang = "English";
-        driver.get("*******");
+        driver.get("http://einvoice-srv.tradenet.com:8080/IMOREGATEWAY/IMORECORE/Einvoicing/Einvoicing/Einvoicing/landing");
         invoiceLogin();
     }
 
@@ -54,8 +57,8 @@ class AutomationtestspringApplicationTests {
                 WebElement email = driver.findElement(By.id("email"));
                 WebElement password = driver.findElement(By.id("password"));
                 WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
-                email.sendKeys("*****");
-                password.sendKeys("*****");
+                email.sendKeys("mcyassoc@hlife.site");
+                password.sendKeys("P@ssw0rd1");
                 loginBtn.submit();
                 break;
             }
@@ -64,7 +67,7 @@ class AutomationtestspringApplicationTests {
 
 
     @Test
-    void createInvoice() throws InterruptedException {
+    void openInvoiceList() throws InterruptedException {
         Thread.sleep(20000L);
         WebElement element = driver.findElement(By.id("side-menu"));
         List<WebElement> items = element.findElements(By.tagName("li"));
@@ -93,8 +96,20 @@ class AutomationtestspringApplicationTests {
         for(WebElement button : buttons) {
             if(button.getText().contains("Add Tax Invoice")) {
                 button.click();
+                createInvoice();
             }
         }
+    }
+
+    void createInvoice() throws InterruptedException {
+        // select Date
+        Thread.sleep(5000L);
+        InvoiceCalendar calendar = new InvoiceCalendar(driver);
+//        calendar.openCalendarByName("InvoiceDate");
+        calendar.openCalendarByName("supplyDate");
+        calendar.selectDate("29-05-2050");
+        calendar.selectTime("14:05");
+        calendar.save();
     }
 
 //    @Test
