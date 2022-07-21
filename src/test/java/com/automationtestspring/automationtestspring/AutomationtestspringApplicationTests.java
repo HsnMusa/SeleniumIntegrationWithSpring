@@ -27,7 +27,7 @@ class AutomationtestspringApplicationTests {
         System.setProperty("webdriver.gecko.driver", "D:/Devops/demo/automationtestspring/geckodriver.exe");
         driver = new FirefoxDriver();
         lang = "English";
-        driver.get("http://einvoice-srv.tradenet.com:8080/IMOREGATEWAY/IMORECORE/Einvoicing/Einvoicing/Einvoicing/landing");
+        driver.get("************");
         invoiceLogin();
     }
 
@@ -57,8 +57,8 @@ class AutomationtestspringApplicationTests {
                 WebElement email = driver.findElement(By.id("email"));
                 WebElement password = driver.findElement(By.id("password"));
                 WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
-                email.sendKeys("mcyassoc@hlife.site");
-                password.sendKeys("P@ssw0rd1");
+                email.sendKeys("******");
+                password.sendKeys("***********");
                 loginBtn.submit();
                 break;
             }
