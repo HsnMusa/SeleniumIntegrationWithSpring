@@ -1,8 +1,10 @@
 package common.fields;
 
+import com.google.common.collect.Iterables;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+//import org.testng.asserts.SoftAssert;
 
 import java.util.*;
 
@@ -14,44 +16,92 @@ public class InvoiceCalendar {
         this.driver = driver;
     }
 
+    private boolean isDisabled(WebElement element) {
+        String disabledAttr = element.getAttribute("disabled");
+        if (disabledAttr != null && disabledAttr.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private List<String> getCurrentMonthYear() {
+        monthYearElement = driver.findElement(By.xpath("//button[@aria-label='Choose month and year']"));
+        List<String> monthYear = Arrays.asList(monthYearElement.getText().split(" "));
+        String month = getCorrespondingMonth(monthYear.get(0));
+        monthYear.set(0, month);
+        return monthYear;
+    }
+
+    private String getCorrespondingMonth(String month) {
+        if ("january".contains(month.toLowerCase())) {
+            return "01";
+        } else if ("february".contains(month.toLowerCase())) {
+            return "02";
+        } else if ("march".contains(month.toLowerCase())) {
+            return "03";
+        } else if ("april".contains(month.toLowerCase())) {
+            return "04";
+        } else if ("may".contains(month.toLowerCase())) {
+            return "05";
+        } else if ("june".contains(month.toLowerCase())) {
+            return "06";
+        } else if ("july".contains(month.toLowerCase())) {
+            return "07";
+        } else if ("august".contains(month.toLowerCase())) {
+            return "08";
+        } else if ("september".contains(month.toLowerCase())) {
+            return "09";
+        } else if ("october".contains(month.toLowerCase())) {
+            return "10";
+        } else if ("november".contains(month.toLowerCase())) {
+            return "11";
+        } else if ("december".contains(month.toLowerCase())) {
+            return "12";
+        }
+        return "";
+    }
+
+    private void click(String xPath, String errorMessage) {
+        WebElement button = driver.findElement(By.xpath(xPath));
+        if (!isDisabled(button)) {
+            button.click();
+        } else {
+//            SoftAssert softAssert = new SoftAssert();
+//            softAssert.fail(errorMessage);
+        }
+    }
+
     private void nextMonth() {
-        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Next month']"));
-        next.click();
+        click("//button[@aria-label='Next month']", "Invalid next Month");
     }
 
     private void previousMonth() {
-        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Previous month']"));
-        previous.click();
+        click("//button[@aria-label='Previous month']", "Invalid previous Month");
     }
 
     private void nextYear() {
-        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Next 21 years']"));
-        next.click();
+        click("//button[@aria-label='Next 21 years']", "Invalid next year");
     }
 
     private void previousYear() {
-        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Previous 21 years']"));
-        previous.click();
+        click("//button[@aria-label='Previous 21 years']", "Invalid previous year");
     }
 
     private void nextHour() {
-        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Add a hour']"));
-        next.click();
+        click("//button[@aria-label='Add a hour']", "Invalid next Hour");
     }
 
     private void previousHour() {
-        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Minus a hour']"));
-        previous.click();
+        click("//button[@aria-label='Minus a hour']", "Invalid previous Hour");
     }
 
     private void nextMinute() {
-        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Add a minute']"));
-        next.click();
+        click("//button[@aria-label='Add a minute']", "Invalid next Minute");
     }
 
     private void previousMinute() {
-        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Minus a minute']"));
-        previous.click();
+        click("//button[@aria-label='Minus a minute']", "Invalid previous minute");
     }
 
     private void selectMonth(String selectedMonth, String currentMonth) {
@@ -87,9 +137,9 @@ public class InvoiceCalendar {
     }
 
     private void selectYear(int sYear, int cYear) {
+        monthYearElement.click();
+        WebElement yearBody = driver.findElement(By.className("owl-dt-calendar-body"));
         if (cYear != sYear) {
-            monthYearElement.click();
-            WebElement yearBody = driver.findElement(By.className("owl-dt-calendar-body"));
             while (cYear > sYear) {
                 List<WebElement> yearsRows = yearBody.findElements(By.tagName("tr"));
                 for (WebElement row : yearsRows) {
@@ -112,10 +162,10 @@ public class InvoiceCalendar {
             }
             while (cYear < sYear) {
                 List<WebElement> yearsRows = yearBody.findElements(By.tagName("tr"));
-                for (WebElement row : yearsRows) {
-                    List<WebElement> years = row.findElements(By.tagName("td"));
-                    int firstYear = Integer.parseInt(years.get(0).getText());
-                    if (firstYear > sYear) {
+                for(int i = yearsRows.size() - 1 ; i >=0 ; i--) {
+                    List<WebElement> years = yearsRows.get(i).findElements(By.tagName("td"));
+                    int lastYear = Integer.parseInt(years.get(years.size() - 1).getText());
+                    if (lastYear < sYear) {
                         nextYear();
                         cYear++;
                         break;
@@ -196,43 +246,6 @@ public class InvoiceCalendar {
                 }
             }
         }
-    }
-
-    private List<String> getCurrentMonthYear() {
-        monthYearElement = driver.findElement(By.xpath("//button[@aria-label='Choose month and year']"));
-        List<String> monthYear = Arrays.asList(monthYearElement.getText().split(" "));
-        String month = getCorrespondingMonth(monthYear.get(0));
-        monthYear.set(0, month);
-        return monthYear;
-    }
-
-    private String getCorrespondingMonth(String month) {
-        if ("january".contains(month.toLowerCase())) {
-            return "01";
-        } else if ("february".contains(month.toLowerCase())) {
-            return "02";
-        } else if ("march".contains(month.toLowerCase())) {
-            return "03";
-        } else if ("april".contains(month.toLowerCase())) {
-            return "04";
-        } else if ("may".contains(month.toLowerCase())) {
-            return "05";
-        } else if ("june".contains(month.toLowerCase())) {
-            return "06";
-        } else if ("july".contains(month.toLowerCase())) {
-            return "07";
-        } else if ("august".contains(month.toLowerCase())) {
-            return "08";
-        } else if ("september".contains(month.toLowerCase())) {
-            return "09";
-        } else if ("october".contains(month.toLowerCase())) {
-            return "10";
-        } else if ("november".contains(month.toLowerCase())) {
-            return "11";
-        } else if ("december".contains(month.toLowerCase())) {
-            return "12";
-        }
-        return "";
     }
 
     // selected date with pattern dd-MM-YYYY
