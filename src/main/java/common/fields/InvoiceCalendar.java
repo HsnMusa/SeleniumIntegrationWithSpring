@@ -34,6 +34,26 @@ public class InvoiceCalendar {
         previous.click();
     }
 
+    private void nextHour() {
+        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Add a hour']"));
+        next.click();
+    }
+
+    private void previousHour() {
+        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Minus a hour']"));
+        previous.click();
+    }
+
+    private void nextMinute() {
+        WebElement next = driver.findElement(By.xpath("//button[@aria-label='Add a minute']"));
+        next.click();
+    }
+
+    private void previousMinute() {
+        WebElement previous = driver.findElement(By.xpath("//button[@aria-label='Minus a minute']"));
+        previous.click();
+    }
+
     private void selectMonth(String selectedMonth, String currentMonth) {
         int sMonthValue = Integer.parseInt(selectedMonth);
         int cMonthValue = Integer.parseInt(currentMonth);
@@ -130,6 +150,53 @@ public class InvoiceCalendar {
         }
     }
 
+    private void selectHour(String selectedHour) {
+        List<WebElement> timeItems = driver.findElements(By.className("owl-dt-timer-content"));
+        for(WebElement item: timeItems) {
+            WebElement hiddenSpan = item.findElement(By.className("owl-hidden-accessible"));
+            if(hiddenSpan.getText().equals("Hour")) {
+                WebElement hourInput = item.findElement(By.className("owl-dt-timer-input"));
+                int cHour = Integer.parseInt(hourInput.getAttribute("value"));
+                int sHour = Integer.parseInt(selectedHour);
+                if(sHour > 23 || sHour < 0) {
+                    System.out.println("Invalid selected hour");
+                } else {
+                    while(cHour > sHour) {
+                        cHour--;
+                        previousHour();
+                    }
+                    while (cHour < sHour) {
+                        cHour++;
+                        nextHour();
+                    }
+                }
+            }
+        }
+    }
+
+    private void selectMinute(String selectedMinute) {
+        List<WebElement> timeItems = driver.findElements(By.className("owl-dt-timer-content"));
+        for(WebElement item: timeItems) {
+            WebElement hiddenSpan = item.findElement(By.className("owl-hidden-accessible"));
+            if(hiddenSpan.getText().equals("Minute")) {
+                WebElement minuteInput = item.findElement(By.className("owl-dt-timer-input"));
+                int cMinute = Integer.parseInt(minuteInput.getAttribute("value"));
+                int sMinute = Integer.parseInt(selectedMinute);
+                if(sMinute > 59 || sMinute < 0) {
+                    System.out.println("Invalid selected Minute");
+                } else {
+                    while(cMinute > sMinute) {
+                        cMinute--;
+                        previousMinute();
+                    }
+                    while (cMinute < sMinute) {
+                        cMinute++;
+                        nextMinute();
+                    }
+                }
+            }
+        }
+    }
 
     private List<String> getCurrentMonthYear() {
         monthYearElement = driver.findElement(By.xpath("//button[@aria-label='Choose month and year']"));
@@ -168,7 +235,6 @@ public class InvoiceCalendar {
         return "";
     }
 
-
     // selected date with pattern dd-MM-YYYY
     public void selectDate(String selectedDate) {
         List<String> date = Arrays.asList(selectedDate.split("-"));
@@ -185,7 +251,21 @@ public class InvoiceCalendar {
         }
     }
 
-    public void openCalendar(String buttonName) {
+    // selected time with pattern hh:MM
+    public void selectTime(String selectedTime) {
+        List<String> time = Arrays.asList(selectedTime.split(":"));
+        selectHour(time.get(0));
+        selectMinute(time.get(1));
+    }
+
+    // selected date time with pattern dd-MM-YYYY hh:MM
+    public void selectDateTime(String selectedDateTime) {
+        List<String> dateTime = Arrays.asList(selectedDateTime.split(" "));
+        selectDate(dateTime.get(0));
+        selectTime(dateTime.get(1));
+    }
+
+    public void openCalendarByName(String buttonName) {
         WebElement openCalendar = driver.findElement(By.name(buttonName));
         openCalendar.click();
     }
