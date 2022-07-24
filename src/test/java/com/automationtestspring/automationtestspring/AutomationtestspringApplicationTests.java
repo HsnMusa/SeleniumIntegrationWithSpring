@@ -1,6 +1,5 @@
 package com.automationtestspring.automationtestspring;
 import common.fields.InvoiceCalendar;
-import dev.failsafe.internal.util.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -8,10 +7,14 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import java.text.ParseException;
+import org.springframework.util.Assert;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 
@@ -22,12 +25,16 @@ class AutomationtestspringApplicationTests {
     private WebDriver driver;
     private String lang;
 
+    private RemoteWebDriver remoteWebDriver;
+
     @BeforeAll
-    void beforeAll() throws InterruptedException {
-        System.setProperty("webdriver.gecko.driver", "D:/Devops/demo/automationtestspring/geckodriver.exe");
-        driver = new FirefoxDriver();
+    void beforeAll() throws InterruptedException, MalformedURLException {
+//        System.setProperty("webdriver.gecko.driver", "D:/Devops/demo/automationtestspring/geckodriver.exe");
+//        driver = new FirefoxDriver();
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        remoteWebDriver = new RemoteWebDriver(new URL("http://192.168.0.14:4444"), firefoxOptions);
         lang = "English";
-        driver.get("************");
+        remoteWebDriver.get("http://einvoice-srv.tradenet.com:8080/IMOREGATEWAY/IMORECORE/Einvoicing/Einvoicing/Einvoicing/landing");
         invoiceLogin();
     }
 
@@ -40,7 +47,7 @@ class AutomationtestspringApplicationTests {
     }
 
     void invoiceLogin() throws InterruptedException {
-        List<WebElement> elements = driver.findElements(By.className("nav-link"));
+        List<WebElement> elements = remoteWebDriver.findElements(By.className("nav-link"));
 //        WebElement languageElement = driver.findElement(By.className("dropdown-toggle"));
 //        lang = languageElement.getText();
         for (WebElement element : elements) {
@@ -54,11 +61,11 @@ class AutomationtestspringApplicationTests {
             if(element.getText().equals("Login")) {
                 element.click();
                 Thread.sleep(3000L);
-                WebElement email = driver.findElement(By.id("email"));
-                WebElement password = driver.findElement(By.id("password"));
-                WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
-                email.sendKeys("******");
-                password.sendKeys("***********");
+                WebElement email = remoteWebDriver.findElement(By.id("email"));
+                WebElement password = remoteWebDriver.findElement(By.id("password"));
+                WebElement loginBtn = remoteWebDriver.findElement(By.xpath("//button[@type='submit']"));
+                email.sendKeys("mcyassoc@hlife.site");
+                password.sendKeys("P@ssw0rd1");
                 loginBtn.submit();
                 break;
             }
@@ -69,7 +76,7 @@ class AutomationtestspringApplicationTests {
     @Test
     void openInvoiceList() throws InterruptedException {
         Thread.sleep(20000L);
-        WebElement element = driver.findElement(By.id("side-menu"));
+        WebElement element = remoteWebDriver.findElement(By.id("side-menu"));
         List<WebElement> items = element.findElements(By.tagName("li"));
         for(WebElement item : items) {
             WebElement upperItem = item.findElement(By.tagName("a"));
@@ -92,7 +99,7 @@ class AutomationtestspringApplicationTests {
 
     void goToAddInvoice() throws InterruptedException {
         Thread.sleep(5000L);
-        List<WebElement> buttons = driver.findElements(By.ByTagName.tagName("button"));
+        List<WebElement> buttons = remoteWebDriver.findElements(By.ByTagName.tagName("button"));
         for(WebElement button : buttons) {
             if(button.getText().contains("Add Tax Invoice")) {
                 button.click();
@@ -104,7 +111,7 @@ class AutomationtestspringApplicationTests {
     void createInvoice() throws InterruptedException {
         // select Date
         Thread.sleep(5000L);
-        InvoiceCalendar calendar = new InvoiceCalendar(driver);
+        InvoiceCalendar calendar = new InvoiceCalendar(remoteWebDriver);
 //        calendar.openCalendarByName("InvoiceDate");
         calendar.openCalendarByName("supplyDate");
         calendar.selectDate("29-05-2050");
